@@ -2,10 +2,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require('ejs');
 const mongoose = require("mongoose");
-var encrypt = require("mongoose-encryption");
+// var encrypt = require("mongoose-encryption");
+const md5=require("md5");
 const app = express();
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
+require('dotenv').config()
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // <--------------------- DATABASE --------------------------------------------------------------->
@@ -14,8 +16,8 @@ const userSchema = new mongoose.Schema({
   username: String,
   password: String,
 });
-const secret = "ILoveMyCountryVeryMuch";
-userSchema.plugin(encrypt, { secret: secret, encryptedFields: ['password'] });
+const secret = process.env.secret;
+// userSchema.plugin(encrypt, { secret: process.env.secret, encryptedFields: ['password'] });
 const List = new mongoose.model("List", userSchema);
 app.get("/", function (req, res) {
   res.render("home");
@@ -32,7 +34,7 @@ app.get("/submit", function (req, res) {
 app.post("/register", function (req, res) {
   console.log(req.body.username); const postContent = new List({
     username: req.body.username,
-    password: req.body.password,
+    password: md5(req.body.password)
   });
   postContent.save().then(res.render("home")).catch(function (err) {
     console.log(err);
@@ -44,7 +46,7 @@ app.post("/register", function (req, res) {
 })
 app.post("/login", function (req, res) {
   const usernam = req.body.username;
-  const password = req.body.password;
+  const password = md5(req.body.password);
   List.findOne({ username: usernam }).then(function (id) {
     if (id.password === password) {
       res.render("secrets");
