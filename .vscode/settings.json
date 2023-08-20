@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/8c2fb3bc-b5ca-4856-94e7-c016eed44a3a/resourceGroups/node-project/providers/Microsoft.Web/sites/weather-app-Rupak",
+    "appService.deploySubpath": "views"
+}
